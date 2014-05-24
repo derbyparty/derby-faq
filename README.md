@@ -93,8 +93,18 @@ MyComponent.prototype.onClick = function(event, element){
 
 В серверной части derby-приложения прописываются все проекции:
 ```js
-store.shareClient.backend.addProjection("topic_headers", "topics", "json0", {id: true, header: true, autor: true, createAt: true});
-store.shareClient.backend.addProjection("users", "auth", "json0", {id: true, username: true, email: true});
+store.shareClient.backend.addProjection("topic_headers", "topics", "json0", {
+  id: true, 
+  header: true, 
+  autor: true, 
+  createAt: true
+});
+
+store.shareClient.backend.addProjection("users", "auth", "json0", {
+  id: true, 
+  username: true, 
+  email: true
+});
 ```
 Далее с проекциями users и topic_headers в derby-приложении можно работать, как с обычными коллекциями.
 ```js
