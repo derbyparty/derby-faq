@@ -283,10 +283,29 @@ app.proto.refresh = function(){
 ```
 ---
 #### Как привязать реактивную переменную к элементу select?
+
 ---
 #### Как привязать реактивную переменную к элементу input type=radio?
+
+Никаких событий ловить не понадобится, derby все делает за нас:
+
+```html
+<label><input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One  </label>
+<label><input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two  </label>
+<label><input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three</label>
+```
+
+В результате выбора в _page.radioVal будет либо 'one', либо 'two', либо 'three', в зависимости от того, что выберет пользователь.
+
+При реактивной привязке к input-у c типом radio, derby предолагает, что встретит в атрибуте checked выражение проверки на равенство (сами равенства нужны для первоначальной установки занчения). Пердполагается, что левым параметром проверки на равенство будет путь, который обновится значением из атрибута value соответствующего input-а, при его выборе пользователем.
 ---
 #### Как привязать реактивную переменную к элементу textarea?
+
+Все очень просто:
+```html
+ <textarea value="{{@newSection.post}}"></textarea>
+```
+
 ---
 ## Модули
 
