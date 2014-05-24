@@ -290,9 +290,15 @@ app.proto.refresh = function(){
 Никаких событий ловить не понадобится, derby все делает за нас:
 
 ```html
-<label><input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One  </label>
-<label><input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two  </label>
-<label><input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three</label>
+<label>
+  <input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One  
+</label>
+<label>
+  <input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two  
+</label>
+<label>
+  <input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three
+</label>
 ```
 
 В результате выбора в _page.radioVal будет либо 'one', либо 'two', либо 'three', в зависимости от того, что выберет пользователь.
