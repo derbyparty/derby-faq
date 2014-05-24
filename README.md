@@ -238,8 +238,24 @@ app.proto.refresh = function(){
 ## Модули
 
 #### Как к derby подключить шаблонизатор jade?
+Для подключения jade к дерби необходимо использовать модуль [derby-jade](https://github.com/cray0000/derby-jade).
+
+Устанавливаем его:
+```bash
+npm install derby-jade
+```
+В derby-приложении до использования app.loadViews() необходимо подключить этот модуль вот таким образом:
+
+app.serverUse(module, 'derby-jade');
+
+Убедитесь, что у вас derby версии не младше 0.6.0-alpha7
+
 ---
 #### Какой модуль использовать для авторизации в derby?
+
+Используйте, надавно созданный специально под 0.6 версию derby, модуль [derby-login](https://github.com/vmakhaev/derby-login).
+
+Модуль использует passportjs, 
 ---
 #### Как подключать клиентские скрипты к derby-приложение, например, jquery?
 ---
