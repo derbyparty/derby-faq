@@ -212,6 +212,7 @@ model.subscribe('users' function(){
 
 Для того, чтобы в определенный момент перерисовать unbound-блок, нужно использовать ключевое слово on, примерно так:
 
+```html
 {{on _page.trigger}}
   {{unbound}}
     <!-- нереактивный html -->
@@ -220,13 +221,13 @@ model.subscribe('users' function(){
 
 <!-- кнопка, по которой будем все это обновлять -->
 <a href="#" on-click="refresh()">Refresh</a>
-
+```
 Нажатии на кнопку изменяем _page.trigger:
-
+```js
 app.proto.refresh = function(){
   app.model.set('_page.trigger', !app.model.get('_page.trigger'))
 }
-
+```
 ---
 #### Как привязать реактивную переменную к элементу select?
 ---
