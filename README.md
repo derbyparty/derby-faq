@@ -394,7 +394,7 @@ if (derby.util.isServer) {
   // только если мы находимся на сервере
 }
 
-if (derby.util.isClient) {
+if (!derby.util.isServer) {
   // код, который должен выполняться, 
   // только если мы находимся на клиенте
 }
