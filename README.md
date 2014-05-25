@@ -333,6 +333,104 @@ app.proto.refresh = function(){
 ```
 
 ---
+
+## События
+
+#### Как получить доступ к объекту event в обработчике событий?
+
+Необходимо в функцию-обработчик события передать дополнительный, предопределенный параметр $event
+```html
+<a href="http://derbyjs.com" on-click="click($event)">
+```
+```js
+app.proto.click = function(e) {
+  e.preventDefault();
+  
+  // ..
+}
+```
+
+---
+#### Как получить доступ к dom-элементу в обработчике событий?
+
+Необходимо в функцию-обработчик события передать дополнительный, предопределенный параметр $element
+```html
+<a href="http://derbyjs.com" on-click="click($event, $element)">
+```
+```js
+app.proto.click = function(e, el) {
+  e.preventDefault();
+  
+  $(el.target).hide();
+  // ..
+}
+```
+
+---
+#### В derby 0.5 был обработчик app.enter, в котором можно было отловить момент создания страницы, а как это сделать в derby 0.6?
+
+Чтобы отлавливать момент создания страницы (когда dom уже сформирован) необходимо, чтобы каждая страница была компонентом. В компонете для этого используется метод create.
+
+В полном виде подход выглядет примерно так:
+
+index.html
+```html
+<!-- точка входа - это наш лейаут -->
+<inport: src="./home">
+<inport: src="./about">
+
+<Body:>
+  <!-- здесь будет header -->
+  
+  <!-- сюда будет генерится контент страниц -->
+  <view name="{{$render.ns}}"/>
+  
+  <!-- здесь будет footer -->
+```
+home.html - страница home будет отдельным компонентом
+```html
+<index:>
+  <h1> Home </h1>
+  <!-- ... -->
+```
+
+about.html - страница about будет отдельным компонентом
+```html
+<index:>
+  <h1> About </h1>
+  <!-- ... -->
+```
+index.js
+```js
+// ...
+
+app.component('home',  Home);
+app.component('about', About);
+
+function Home (){};
+function About(){};
+
+Home.prototype.create = function(model, dom){
+  // страница отрендерина
+}
+
+About.prototype.create = function(model, dom){
+  // страница отрендерина
+}
+
+// ...
+
+app.get('/', function(page){
+  page.render('home');
+});
+
+app.get('/about', function(page){
+  page.render('about');
+});
+```
+
+---
+
 ## Модули
 
 #### Как к derby подключить шаблонизатор jade?
