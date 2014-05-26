@@ -322,13 +322,13 @@ app.proto.refresh = function(){
 
 ```html
 <label>
-  <input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One  
+<input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One  
 </label>
 <label>
-  <input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two  
+<input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two  
 </label>
 <label>
-  <input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three
+<input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three
 </label>
 ```
 
