@@ -341,7 +341,7 @@ app.proto.refresh = function(){
 
 Все очень просто:
 ```html
- <textarea value="{{@newSection.post}}"></textarea>
+ <textarea>{{message}}</textarea>
 ```
 
 ---
