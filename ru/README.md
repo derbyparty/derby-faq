@@ -340,6 +340,12 @@ app.proto.refresh = function(){
 #### Как привязать реактивную переменную к элементу textarea?
 
 Все очень просто:
+
+так было до 0.6.0-alpha6
+```html
+ <textarea value="{{message}}"></textarea>
+```
+так стало, начиная от 0.6.0-alpha6
 ```html
  <textarea>{{message}}</textarea>
 ```
