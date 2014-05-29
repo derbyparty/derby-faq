@@ -1,4 +1,4 @@
-derby-faq
+Derby 0.6 FAQ
 =========
 
 [Russian version](https://github.com/zag2art/derby-faq/tree/master/ru)
