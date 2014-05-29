@@ -144,7 +144,7 @@ app.on('model', function(model){
 ---
 #### Как в коде компонент получить доступ к корневой области видимости модели?
 
-Как известно, в компонентах своя, изолированная область видимости, поэтому, чтобы обратиться к корневой модели, вместо model, здесь необходимо использовать model.root. Например:
+Как известно, в компонентах своя, изолированная область видимости, поэтому, чтобы обратиться к корневой модели, вместо model, здесь необходимо использовать model.root либо доставать корневую модель из app. Например:
 ```js
 function MyComponent() {}
 
@@ -157,10 +157,13 @@ MyComponent.prototype.init = function(model){
 
 MyComponent.prototype.onClick = function(event, element){
   var topics = this.model.root.get('_page.topics');
+  // То же самое можно сделать так:
+  var topics = this.app.model.get('_page.topics');
   // ...
   
 }
 ```
+
 ---
 ## Модель
 
