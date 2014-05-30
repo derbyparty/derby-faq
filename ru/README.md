@@ -220,6 +220,47 @@ coffee itsalive.coffee --db project
 Подробней смотрите на странице [модуля](https://github.com/share/igor)
 
 ---
+## Стили
+
+#### Как в derby использовать less-стили?
+
+Начиная с версии derby 0.6.0-alpha9, блок, отвечающий за компиляцию less-файлов в css, вынесен в отдельный модуль derby-less.
+
+Теперь, чтобы использовать, его нужно сначала подключить к проекту:
+```bash
+npm install derby-less
+```
+далее в js-файле вашего приложения нужно прописать:
+```js
+// Добавляем поддержку Less
+app.serverUse(module, 'derby-less');
+```
+Причем эта строка должна быть раньше любого вызова app.loadStyles()
+
+Например, так:
+```js
+var derby = require('derby');
+var app = module.exports = derby.createApp('example', __filename);
+
+// Add Less support (before loadStyles)
+app.serverUse(module, 'derby-less');
+
+app.loadViews (__dirname);
+app.loadStyles(__dirname);
+
+app.get('/', function(page, model) {
+  page.render();
+});
+```
+
+Все, теперь вместо css-файлов можно использовать less-файлы.
+
+---
+#### Как в derby использовать stylus-стили?
+
+Все абсолютно то же самое, что и для less, только модуль называется derby-stylus
+
+---
 ## View'хи
 
 #### Как вставить в шаблон неэкранированный html или текст?
