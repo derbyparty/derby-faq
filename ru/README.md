@@ -163,7 +163,35 @@ MyComponent.prototype.onClick = function(event, element){
   
 }
 ```
+---
+#### Как в компоненте создать запрос и локальную ссылку на результаты его выполнения?
 
+```javascript
+app.get('/', function(page) {
+  page.render('home');
+});
+function Home() {
+}
+app.component('home', Home);
+Home.prototype.view = __dirname + '/home.html';
+Home.prototype.create = function(model) {
+  // var $query = model.query('somedata', {});  Так создание ссылок не работает
+  var $query = model.root.query('somedata', {}); // a так работает
+  model.subscribe($query, function() {
+      model.ref('items', $query); 
+      // теперь в шаблоне компонента можно использовать локальный путь items
+  });
+}
+```
+home.html
+```html
+<index:>
+  <ul>
+    {{each items}}
+    <li>{{this.title}}</li>
+    {{/}}
+  </ul>
+```
 ---
 ## Модель
 
@@ -481,8 +509,8 @@ app.proto.create = function(model){
 index.html
 ```html
 <!-- точка входа - это наш лейаут -->
-<inport: src="./home">
-<inport: src="./about">
+<import: src="./home">
+<import: src="./about">
 
 <Body:>
   <!-- здесь будет header -->
