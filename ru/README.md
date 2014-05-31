@@ -164,15 +164,17 @@ MyComponent.prototype.onClick = function(event, element){
 }
 ```
 ---
-#### Как в компоненте создать запрос и локальную ссылку на результаты его выполнения?
+#### Как в компоненте связать результаты запроса с локальным (для компонента) путем в модели?
 
 ```javascript
 app.get('/', function(page) {
   page.render('home');
 });
-function Home() {
-}
+
+function Home() {}
+
 app.component('home', Home);
+
 Home.prototype.view = __dirname + '/home.html';
 Home.prototype.create = function(model) {
   // var $query = model.query('somedata', {});  Так создание ссылок не работает
@@ -192,6 +194,7 @@ home.html
     {{/}}
   </ul>
 ```
+
 ---
 ## Модель
 
