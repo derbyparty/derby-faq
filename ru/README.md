@@ -567,6 +567,35 @@ app.get('/about', function(page){
 ```
 
 ---
+#### Как в компоненте подписаться на событие не всего document'a, а необходимого контрола?
+
+Для этого необходимо указать параметр target (в примере это self.input) при подписывании на событие, например:
+
+View:
+```html
+<index: element='demo'>
+    <input as='input' type='text' value="{{@value}}" />
+```
+Code:
+```js
+module.exports = Demo;
+
+function Demo() {
+}
+
+Demo.prototype.view = __dirname + '/demo.html';
+
+Demo.prototype.create = function (model, dom) {
+    var self = this;
+    dom.on('keydown', self.input, function (e) {
+        if (e.keyCode === 13) {
+        
+        }
+    });
+};
+```
+
+---
 
 ## Модули
 
