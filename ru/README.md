@@ -402,7 +402,7 @@ app.proto.refresh = function(){
 
 <select>
   {{each _page.filters as #filter}}
-      <option selected="{{_page.filterId === #filter.id}}", value="{{#filter.id}}">
+      <option selected="{{_page.filterId === #filter.id}}" value="{{#filter.id}}">
         {{#filter.name}}
       </option>
   {{/}}
