@@ -34,6 +34,11 @@ FAQ по Derby 0.6 (на русском)
 По nodejs и expressjs я бы посоветовал пройти курс [Ильи Кантора](http://learn.javascript.ru/nodejs-screencast) с обязательной практикой.
 
 ---
+#### Как быстро создать базовый проект Derby 0.6?
+
+Используйте [generator-derby](https://github.com/derbyparty/generator-derby). Он поддерживает javascript/coffeescript, опционально jade, stylus, redis.
+
+---
 ## Запросы
 
 #### Как сделать реактивный запрос к количеству элементов в коллекции (сами элементы мне не нужны)?
