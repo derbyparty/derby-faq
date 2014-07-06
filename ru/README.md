@@ -200,6 +200,30 @@ home.html
     {{/}}
   </ul>
 ```
+---
+#### Как в компоненте запускать реактивные функции?
+В компонентах для этого идеально подходит обработчик `init` - так как он срабатывает и на сервере и на клиенте (при серверном рендеринге), и на клиенте (при клиентском рендеринге). Это дает нам возможность присать реактивную функцию непосредственно в колбеке фунции `start`, и не пользоваться серилизацией: `model.fn`
+
+Вот пара примеров:
+
+```js
+// count и items - приватные пути компоненты
+Comp.prototype.init = function(){
+  this.model.start('count', 'items', function(items){
+    return Object.keys(items).length;
+  });
+}
+```
+```js
+// count - приватный путь компоненты, items - глобальный путь
+Comp.prototype.init = function(){
+  var count = this.model.at('count');
+  // count.path() возращает что-то типа: $components._1.count
+  this.model.root.start(count.path(), 'items', function(items){
+    return Object.keys(items).length;
+  });
+}
+```
 
 ---
 ## Модель
