@@ -51,7 +51,7 @@ FAQ по Derby 0.6 (на русском)
     }
   });
   
-  model.subscribe(tipicsCount, function(){
+  model.subscribe(topicsCount, function(){
     topicsCount.refExtra('_page.topicsCount');
     
     // ...
