@@ -142,3 +142,209 @@ app.on('model', function onModel(model) {
   });
 });
 ```
+---
+## Components
+
+#### How to get an access to model's root scope in component's templates?
+As is known, components have its own isolated scope so in order to access model's root a #root prefix should be used:
+
+```html
+  <ul>
+    {{each #root._page.topics as #topic}}
+      <!-- ... -->
+    {{/}}
+  </ul>
+```
+
+---
+#### How to access the model's root scope within component's code?
+Since components have its own isolated scope in order to access a root model you would
+use model.root or get the root model from app. For example:
+
+```js
+function MyComponent() {}
+
+MyComponent.prototype.init = function(model){
+  // model.get('_page.topics') won't work
+  var topics = model.root.get('_page.topics');
+  // ...
+
+}
+
+MyComponent.prototype.onClick = function(event, element){
+  var topics = this.model.root.get('_page.topics');
+  // The string below does the same:
+  var topics = this.app.model.get('_page.topics');
+  // ...
+
+}
+```
+---
+#### How to reference query's result with a local model path in a component?
+
+```javascript
+app.get('/', function(page) {
+  page.render('home');
+});
+
+function Home() {}
+
+app.component('home', Home);
+
+Home.prototype.view = __dirname + '/home.html';
+Home.prototype.create = function(model) {
+  // var $query = model.query('somedata', {}); Model reference won't work
+  var $query = model.root.query('somedata', {}); // Works
+  model.subscribe($query, function() {
+      model.ref('items', $query);
+      // Now the local path 'items' can be used in a component's template
+  });
+}
+```
+home.html
+```html
+<index:>
+  <ul>
+    {{each items}}
+    <li>{{this.title}}</li>
+    {{/}}
+  </ul>
+```
+Note that making queries within a component is an anti-pattern. All subscriptions
+should be made in a controller (while handling a particular route), components
+are intended to work with and displaying data. Getting all the data in a controller
+is effective while getting the data separately for each component is not, especially
+in case of multiple components.
+
+---
+#### How to run reactive functions in a component?
+Component's `init` handler suites best for the purpose since it works both
+on a server (server's rendering) and a client (client's rendering) sides. It allows us
+to send the reactive function via callback of `start` function and not to use
+a `model.fn` serialization.
+
+Couple examples:
+
+```js
+// 'count' and 'items' are component's private paths
+Comp.prototype.init = function(){
+  this.model.start('count', 'items', function(items){
+    return Object.keys(items).length;
+  });
+}
+```
+```js
+// 'count' - component's private path, 'items' - global path
+Comp.prototype.init = function(){
+  var count = this.model.at('count');
+  // count.path() returns something like: $components._1.count
+  this.model.root.start(count.path(), 'items', function(items){
+    return Object.keys(items).length;
+  });
+}
+```
+
+---
+## Model
+
+#### I don't need all collection's fields in a browser,
+how to get only particular fields (collection's projection)?
+
+All projections should be declared in a server part of a derby application
+```js
+store.shareClient.backend.addProjection("topic_headers", "topics", "json0", {
+  id: true,
+  header: true,
+  autor: true,
+  createAt: true
+});
+
+store.shareClient.backend.addProjection("users", "auth", "json0", {
+  id: true,
+  username: true,
+  email: true
+});
+```
+
+Then we can work with 'users' and 'topic_headers' projections same way as with regular collections
+```js
+model.subscribe('users' function(){
+  model.ref('_page.users', 'users');
+  // ...
+});
+```
+Note, that 'id' field is required for projections creation. Currently, only white list is supported
+(list of fields that are present in a projection). Also, you can set the fields only of the first level of nesting so far.
+
+---
+## Database
+
+#### They say there's a possibility to make it work without redis by using only mongodb, how to achieve this?
+
+In a server part of a derby application when creating a store object you should use only mongodb data:
+
+```js
+  var store = derby.createStore({
+    db: liveDbMongo(mongoUrl + '?auto_reconnect', {safe: true})
+  });
+```
+
+Keep in mind, that redis is required, if you're planning horizontal scaling (run multiple derby servers
+simultaneously)
+
+---
+#### I've already got a mongodb database, how can I use it with derby?
+
+You can use it after a certain processing. The thing is, that share.js [sharejs](http://sharejs.org/)
+is used for solving conflicts in derby. It adds additional data for each record in a collection like number of version, object's type (from share.js perspective) etc. Also, with each existing collection there's another collection, that has "ops" suffix, for example "users_ops". It is used for storing operations log. This log also requires initialization. Module [igor](https://github.com/share/igor) does it for you.
+
+
+```bash
+npm install igor
+
+coffee itsalive.coffee --db project
+```
+For details visit [page](https://github.com/share/igor)
+
+---
+## Styles
+
+#### How to use less styles in derby?
+
+Starting from derby 0.6.0-alpha9, the block which is responsible for compilation
+of *.less files into *.css is placed in a separate module called derby-less.
+
+It should be included into a project as follows:
+```bash
+npm install derby-less
+```
+then in a [main] js file of your application you'll need to add a line:
+```js
+// Adding Less support
+app.serverUse(module, 'derby-less');
+```
+Note that the line above should be placed before any app.loadStyles() call
+
+For instance:
+```js
+var derby = require('derby');
+var app = module.exports = derby.createApp('example', __filename);
+
+// Add Less support (before loadStyles)
+app.serverUse(module, 'derby-less');
+
+app.loadViews(__dirname);
+app.loadStyles(__dirname);
+
+app.get('/', function(page, model) {
+  page.render();
+});
+```
+
+That's it, you can now use less files instead of css.
+
+---
+#### How to use stylus in derby?
+
+The process is absolutely the same as it is for less, you'll just need to install
+a module called derby-stylus instead.
