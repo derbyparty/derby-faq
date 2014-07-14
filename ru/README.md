@@ -27,7 +27,7 @@ FAQ по Derby 0.6 (на русском)
 ---
 #### Что нужно знать до начала изучения derby.js?
 
-1. необходимы базовые знания по веб-разработке (html, css, javascript); 
+1. необходимы базовые знания по веб-разработке (html, css, javascript);
 2. nodejs — нужно понимать commonjs-модули, npm, знать, как запустить стандартный http-сервер;
 3. expressjs — приложения derby строятся поверх приложений express, поэтому хорошо бы иметь об экспресс и серверном js какие-то базовые знания (подключение модулей, обработка запроссов и т.д.)
 
@@ -50,10 +50,10 @@ FAQ по Derby 0.6 (на русском)
       active: true
     }
   });
-  
+
   model.subscribe(topicsCount, function(){
     topicsCount.refExtra('_page.topicsCount');
-    
+
     // ...
   });
 ```
@@ -70,28 +70,28 @@ model.query(collection, path)
 
 Для чего это может быть нужно. Представьте себе чат, мы выводим страницу с одной из комнат чата. Туда постоянно входят новые люди, что-то там пишут. В сообщениях чата мы храним только id юзера, а остальная информация хранится в коллекции users. Естественно, для вывода сообщений имена юзеров нам нужны. Всех юзеров грузить на клиента смысла нет, нужны только те, сообщения которых есть в нашей комнате.
 
-Cделаем так: 
- 1. подпишемся на сообщения в комнате, 
+Cделаем так:
+ 1. подпишемся на сообщения в комнате,
  2. запустим реактивную функцию, которая будет собирать id всех юзеров, от которых в нашей комнате есть сообщения,
  3. подпишемся на коллекцию users, используя в качестве списка id, результат выполнения реактивной функции
 
 ```js
 app.get('/chat/:room', function(page, model, params, next){
   var room = params.room;
-  
+
   var messages = model.query('messages', {room: room});
 
   model.subscribe(messages, function(){
-  
+
     messages.ref('_page.messages');
-    
+
     // Запускаем реактивную функцию, она будет срабатывать при изменении messages
     // и записывать id-шки всех user-ов в _page.userIds
-    
+
     model.start('_page.userIds', 'messages', 'pluckUserIds');
-    
+
     var users = model.query('users', '_page.userIds');
-    
+
     model.subscribe(users, function(){
       // ...
       page.render();
@@ -99,14 +99,14 @@ app.get('/chat/:room', function(page, model, params, next){
   });
 }
 
-// Реактивные функции необходимо регистрировать после того, 
+// Реактивные функции необходимо регистрировать после того,
 // как модель создана
 app.on('model', function(model){
   model.fn('pluckUserIds', function (messages) {
     var ids = {};
-    
+
     for (var key in messages) ids[messages[key].userId] = true;
-    
+
     return Object.keys(ids);
   });
 });
@@ -116,24 +116,24 @@ app.on('model', function(model){
 #### Как получить не сами элементы коллекции, а только их id?
 ```js
   var query = model.query('topics');
-  
+
   model.subscribe(query, function(){
     query.refIds('_page.topicIds');
   });
-```  
+```
 ---
   Но необходимо учитывать, что сама коллекция topics в данном случае будет копироваться в браузер, чтобы этого избежать используйте проекции. В серверной части derby, в server.js определите проекцию для коллекции topics:
-```  
+```
   store.shareClient.backend.addProjection("topicIds", "topics", "json0", {id: true});
-```  
+```
   Далее с проекцией можно работать, как с обычной коллекцией.
-```js  
+```js
   var query = model.query('topicsIds');
-  
+
   model.subscribe(query, function(){
     query.refIds('_page.topicIds');
   });
-```  
+```
 ---
 ## Компоненты
 
@@ -145,7 +145,7 @@ app.on('model', function(model){
   {{each #root._page.topics as #topic}}
     <!-- ... -->
   {{/}}
-<ul>
+</ul>
 ```
 ---
 #### Как в коде компонент получить доступ к корневой области видимости модели?
@@ -158,7 +158,7 @@ MyComponent.prototype.init = function(model){
   // model.get('_page.topics') работать не будет
   var topics = model.root.get('_page.topics');
   // ...
-  
+
 }
 
 MyComponent.prototype.onClick = function(event, element){
@@ -166,7 +166,7 @@ MyComponent.prototype.onClick = function(event, element){
   // То же самое можно сделать так:
   var topics = this.app.model.get('_page.topics');
   // ...
-  
+
 }
 ```
 ---
@@ -186,7 +186,7 @@ Home.prototype.create = function(model) {
   // var $query = model.query('somedata', {});  Так создание ссылок не работает
   var $query = model.root.query('somedata', {}); // a так работает
   model.subscribe($query, function() {
-      model.ref('items', $query); 
+      model.ref('items', $query);
       // теперь в шаблоне компонента можно использовать локальный путь items
   });
 }
@@ -201,11 +201,11 @@ home.html
   </ul>
 ```
 
-Стоить отметить, что запросы внутри компоненты - антипаттерн. Все подписки на данные должны выполняться в контроллере (при обработке роута), компоненты предназначены только для отображения данные и работы с ними. Получить все данные за раз в контроллере - это эффективно, получать данные для каждого компонента отдельно - очень неэффективно, особенно в случае множества компонент.
+Стоить отметить, что запросы внутри компоненты - антипаттерн. Все подписки на данные должны выполняться в контроллере (при обработке роута), компоненты предназначены только для отображения данных и работы с ними. Получить все данные за раз в контроллере - это эффективно, получать данные для каждого компонента отдельно - очень неэффективно, особенно в случае множества компонент.
 
 ---
 #### Как в компоненте запускать реактивные функции?
-В компонентах для этого идеально подходит обработчик `init` - так как он срабатывает и на сервере и на клиенте (при серверном рендеринге), и на клиенте (при клиентском рендеринге). Это дает нам возможность присать реактивную функцию непосредственно в колбеке фунции `start`, и не пользоваться серилизацией: `model.fn`
+В компонентах для этого идеально подходит обработчик `init` - так как он срабатывает и на сервере и на клиенте (при серверном рендеринге), и на клиенте (при клиентском рендеринге). Это дает нам возможность прислать реактивную функцию непосредственно в колбеке фунции `start`, и не пользоваться серилизацией: `model.fn`
 
 Вот пара примеров:
 
@@ -236,15 +236,15 @@ Comp.prototype.init = function(){
 В серверной части derby-приложения прописываются все проекции:
 ```js
 store.shareClient.backend.addProjection("topic_headers", "topics", "json0", {
-  id: true, 
-  header: true, 
-  autor: true, 
+  id: true,
+  header: true,
+  autor: true,
   createAt: true
 });
 
 store.shareClient.backend.addProjection("users", "auth", "json0", {
-  id: true, 
-  username: true, 
+  id: true,
+  username: true,
   email: true
 });
 ```
@@ -269,7 +269,7 @@ model.subscribe('users' function(){
   });
 ```
 
-Но стоит учесть то, что redis необходим, если вы планируете горизонтальное масштабирование (запускать несколько derby-серверов параллельно). 
+Но стоит учесть то, что redis необходим, если вы планируете горизонтальное масштабирование (запускать несколько derby-серверов параллельно).
 
 ---
 #### А что делать, если у меня уже есть готовая mongodb-база данных, ее можно использовать с derby?
@@ -306,7 +306,7 @@ app.serverUse(module, 'derby-less');
 var derby = require('derby');
 var app = module.exports = derby.createApp('example', __filename);
 
-// Add Less support (before loadStyles)
+// Добавить поддержку Less (перед вызовом loadStyles)
 app.serverUse(module, 'derby-less');
 
 app.loadViews (__dirname);
@@ -341,7 +341,7 @@ app.get('/', function(page, model) {
 </article>
 ```
 
-Учитывайте то, что это - потенциальная дыра в безопасности. Ваши данные должны быть полностью отчищены от опасных тегов, данные для атрибутов должны быть экранированы. В общем, прежде чем использовать такое, убедитесь, что вы понимаете, что делаете.
+Учитывайте то, что это - потенциальная дыра в безопасности. Ваши данные должны быть полностью очищены от опасных тегов, данные для атрибутов должны быть экранированы. В общем, прежде чем использовать такое, убедитесь, что вы понимаете, что делаете.
 
 ---
 #### Как в шаблоне определенный блок сделать нереактивным (чтобы он не обновлялся сразу при изменении данных в модели)?
@@ -357,9 +357,9 @@ app.get('/', function(page, model) {
   model.fetch('topics', function(){
     // ...
   });
-```  
+```
 Важно понимать, что здесь мы пока говорим только о модели и только об обновлениях, приходящих с сервера. Важно, что сделав fetch, если мы что-то добавили в коллекцию, использовав model.add - наши данные вполне себе попадут на сервер в б.д., с другой стороны, если данные в коллекцию добавил кто-то другой - они к нам не придут.
-  
+
 Теперь поговорим о реактивности html-шаблонов, по умолчанию, все привязки к данным там реактивные, то есть, как только поменялись данные в модели (не важно пришли ли обновления с сервера, или модель изменена кодом), изменения сразу же отразятся в html-шаблоне, но этим можно управлять.
 
 Для управления реактивностью в шаблонах, используются такие зарезервированные слова, как bound и unbound, их можно использовать как в блочной нотации, так и в виде модификатора для выражений. Продемонстрирую:
@@ -391,7 +391,7 @@ app.get('/', function(page, model) {
     <!-- прявязка не реактивная, так как лежит внутри unbound-блока-->
     {{_page.text}}
   </p>
-  
+
   <p>
     <!-- прявязка реактивная, так как это указано явно-->
     {{bound _page.text}}
@@ -452,10 +452,10 @@ app.proto.refresh = function(){
 
 ```html
 <label>
-<input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One  
+<input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One
 </label>
 <label>
-<input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two  
+<input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two
 </label>
 <label>
 <input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three
@@ -493,7 +493,7 @@ app.proto.refresh = function(){
 ```js
 app.proto.click = function(e) {
   e.preventDefault();
-  
+
   // ..
 }
 ```
@@ -508,7 +508,7 @@ app.proto.click = function(e) {
 ```js
 app.proto.click = function(e, el) {
   e.preventDefault();
-  
+
   $(el.target).hide();
   // ..
 }
@@ -550,10 +550,10 @@ index.html
 
 <Body:>
   <!-- здесь будет header -->
-  
+
   <!-- сюда будет генерится контент страниц -->
   <view name="{{$render.ns}}"/>
-  
+
   <!-- здесь будет footer -->
 ```
 home.html - страница home будет отдельным компонентом
@@ -621,7 +621,7 @@ Demo.prototype.create = function (model, dom) {
     var self = this;
     dom.on('keydown', self.input, function (e) {
         if (e.keyCode === 13) {
-        
+
         }
     });
 };
@@ -686,12 +686,12 @@ store.on('bundle', function(browserify){
 var derby = require('derby');
 
 if (derby.util.isServer) {
-  // код, который должен выполняться, 
+  // код, который должен выполняться,
   // только если мы находимся на сервере
 }
 
 if (!derby.util.isServer) {
-  // код, который должен выполняться, 
+  // код, который должен выполняться,
   // только если мы находимся на клиенте
 }
 ```
@@ -742,7 +742,7 @@ if (derby.util.isServer) {
 // Срабатывает при каждом новом подключении клиентов
 store.on('client', function(client){
   console.log('Кодключился клиент:', client.id);
-  
+
   // Событие close происходит при отключении клиента
   // (потеря связи / закрытие страницы)
   client.on('close', function(reason){
@@ -781,17 +781,17 @@ store.on('client', function(client) {
 
   // Регистрируем обработчик для события myEvent
   client.channel.on('myEvent', function(data, cb) {
-    
+
     //
     // Здесь наша логика, которую не должны видеть в браузере
     // допустим результате ее выполнения будет в result
     //
-    
+
     cb(result);
   });
 });
-```    
-    
+```
+
 ---
 #### Как с сервера оповестить о чем-то клиентов?
 
@@ -800,7 +800,7 @@ store.on('client', function(client) {
 for (var id in app.clients) {
   app.clients[id].channel.send('myEvent', data);
 }
-```    
+```
 
 На клиенте обработка события myEvent будет такой:
 ```js
