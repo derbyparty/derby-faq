@@ -333,7 +333,7 @@ app.get('/', function(page, model) {
 ```html
 <header>
   {{topic.header}}
-<header>
+</header>
 
 <!-- topic.unescapedTitle сделал только для примера, не знаю зачем такое может понадобиться -->
 <article title="{{unescaped topic.unescapedTitle}}">
