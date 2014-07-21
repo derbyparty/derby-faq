@@ -348,3 +348,315 @@ That's it, you can now use less files instead of css.
 
 The process is absolutely the same as it is for less, you'll just need to install
 a module called derby-stylus instead.
+
+---
+## Views
+
+#### How to insert an unescaped html fragment in a template?
+
+You would use an 'unescaped' modifier:
+```html
+<header>
+  {{topic.header}}
+<header>
+
+<!-- did this only on example purpose, don't know when it can be useful -->
+<article title="{{unescaped topic.unescapedTitle}}">
+  {{unescaped topic.html}}
+</article>
+```
+
+Warning: this is a potential security hole. Your data should be cleaned up
+   from dangerous tags, attributes data should be escaped. Generally, think twice
+   before using a code like this.
+
+---
+#### How to make a particular block in a template non-reactive (it won't update immediately after the model data has changed)?
+
+First, it should be mentioned that if we don't need a reactivity at all then instead of
+data subscription we should just make a request for its current state, i.e. do model.fetch
+instead of model.subscribe:
+
+```js
+  // Here the data will be changing reactively
+  model.subscribe('topics', function(){
+    // ...
+  });
+
+  // And here it won't
+  model.fetch('topics', function(){
+    // ...
+  });
+```
+It's important to understand, that for now we're talking only about model and updates coming from the server. Once we had done model.fetch and then if we added something to the collection using model.add - our data will appear in a database. But if data was added to the collection by somebody else - it won't come to the server and not appear in the db.
+
+Now let's talk about reactivity in html templates. All data bindings are reactive by default, i.e. as soon as data has changed (doesn't matter whether updates came from the server or model has changed), the changes are immediately shown in an html template though you can control the behaviour.
+
+In order to control a reactivity in templates, reserved words 'bound' and 'unbound' are used either in block notation or as expressions modifiers:
+
+```html
+<p>
+  <!-- the binding is reactive by default -->
+  {{_page.text}}
+</p>
+<p>
+  <!-- reactive binding is set explicitly -->
+  {{bound _page.text}}
+</p>
+
+<!-- Within the block all bindings are reactive by default -->
+{{bound}}
+  <p>
+    <!-- the binding is reactive since it's within a bound-block -->
+    {{_page.text}}
+  </p>
+  <p>
+    <!-- the binding isn't reactive because it's set explicitly -->
+    {{unbound _page.text2}}
+  </p>
+{{/}}
+
+{{unbound}}
+  <p>
+    <!-- the binding is not reactive because it's within a unbound-block -->
+    {{_page.text}}
+  </p>
+
+  <p>
+    <!-- the binding is reactive because it's set explicitly -->
+    {{bound _page.text}}
+  </p>
+{{/}}
+
+```
+
+Naturally, blocks can be nested for convenience.
+
+---
+#### How to update a non-reactive block in a certain moment?
+
+In order to re-render an unbound-block you would use a key word 'on', as follows:
+
+```html
+{{on _page.trigger}}
+  {{unbound}}
+    <!-- non-reactive html -->
+  {{/}}
+{{/}}
+
+<!-- click button to update -->
+<a href="#" on-click="refresh()">Refresh</a>
+```
+Changing _page.trigger after button was pressed:
+```js
+app.proto.refresh = function(){
+  app.model.set('_page.trigger', !app.model.get('_page.trigger'))
+}
+```
+---
+#### How to bind a reactive variable to the select element?
+
+No events required, derby does it for you. Learn from the example:
+
+```html
+<!-- array _page.filters has objects with id and name fields - the filter's identifier and filter's name -->
+
+<select>
+  {{each _page.filters as #filter}}
+      <option selected="{{_page.filterId === #filter.id}}" value="{{#filter.id}}">
+        {{#filter.name}}
+      </option>
+  {{/}}
+</select>
+```
+
+After selection _page.filteredId will have an id of the selected filter.
+
+When binding to option, derby expects to meet an equity check in the 'selected' attribute (equities itself are needed for initial value setting). It's assumed that the left parameter of the check would be a path that will take a value from the option's value attribute when selected.
+
+---
+
+#### How to bind a reactive variable to the input type="radio" element?
+
+No need in catching events, derby does it for you:
+
+```html
+<label>
+<input type="radio" name="opt" value="one"   checked="{{_page.radioVal === 'one'  }}">One
+</label>
+<label>
+<input type="radio" name="opt" value="two"   checked="{{_page.radioVal === 'two'  }}">Two
+</label>
+<label>
+<input type="radio" name="opt" value="three" checked="{{_page.radioVal === 'three'}}">Three
+</label>
+```
+
+Eventually _page.radioVal will contain either 'one', 'two' or 'three' depending on what user's selected.
+
+When binding to 
+```html
+<input type="radio">
+```, derby expects to meet an equity check in a checked attribute (equities itself are required for initial value setting). It's assumed that the left parameter of the check would be a path that will update from the option's value attribute when selected. 
+
+---
+#### How to bind a reactive variable to the textarea element?
+
+Very simple:
+
+before 0.6.0-alpha6
+```html
+ <textarea value="{{message}}"></textarea>
+```
+starting from the 0.6.0-alpha6
+```html
+ <textarea>{{message}}</textarea>
+```
+
+---
+
+## Events
+
+#### How to access the event object in an event handler?
+
+You should pass a predefined '$event' parameter into the event handler function.
+```html
+<a href="http://derbyjs.com" on-click="click($event)">
+```
+```js
+app.proto.click = function(e) {
+  e.preventDefault();
+
+  // ..
+}
+```
+
+---
+#### How to access the dom element in an event handler?
+
+A predefined '$element' parameter should be passed into the event handler function.
+```html
+<a href="http://derbyjs.com" on-click="click($event, $element)">
+```
+```js
+app.proto.click = function(e, el) {
+  e.preventDefault();
+
+  $(el.target).hide();
+  // ..
+}
+```
+
+---
+#### Does derby 0.6 have handler similar to app.ready in version 0.5 which runs only once in a browser in the very beginning required for client script initialization?
+
+The handler is in app.proto.create. Let's have a look:
+
+index.js
+```js
+// ...
+
+// Called only once in a browser after the first page rendering
+app.proto.create = function(model){ 
+  // Initializing jQuery AJAX
+  $.ajaxSetup({
+    dataType: 'json',
+    contentType: 'application/json; charset=utf-8',
+    processData: false
+  });
+}
+```
+
+---
+#### Derby 0.5 had an app.enter handler allowed you to catch a moment of a page creation, how to make it in derby 0.6?
+
+In order to catch the moment of a page creation (when dom is formed) you need every page to be a component. Component's method 'create' is used for this.
+
+The approach looks something like this:
+
+index.html
+```html
+<!-- точка входа - это наш лейаут -->
+<!-- entry point is our layout -->
+<import: src="./home">
+<import: src="./about">
+
+<Body:>
+  <!-- place for a header -->
+  
+  <!-- pages content goes here -->
+  <view name="{{$render.ns}}"/>
+
+  <!-- place for a footer -->
+```
+home.html - 'home' page will be a separate component
+```html
+<index:>
+  <h1> Home </h1>
+  <!-- ... -->
+```
+
+about.html - 'about' page will be a separate component
+```html
+<index:>
+  <h1> About </h1>
+  <!-- ... -->
+```
+index.js
+```js
+// ...
+
+app.component('home',  Home);
+app.component('about', About);
+
+function Home (){};
+function About(){};
+
+Home.prototype.create = function(model, dom){
+  // 'home' page has been rendered
+}
+
+About.prototype.create = function(model, dom){
+  // 'about' page has been rendered
+}
+
+// ...
+
+app.get('/', function(page){
+  page.render('home');
+});
+
+app.get('/about', function(page){
+  page.render('about');
+});
+```
+
+---
+#### How to listen to a specific control event instead of the whole document event in a component?
+
+In order to do this you will need to specify a 'target' parameter (it's 'self.input' in the example) when subscribing to the event:
+
+View:
+```html
+<index: element='demo'>
+    <input as='input' type='text' value="{{@value}}" />
+```
+Code:
+```js
+module.exports = Demo;
+
+function Demo() {
+}
+
+Demo.prototype.view = __dirname + '/demo.html';
+
+Demo.prototype.create = function (model, dom) {
+    var self = this;
+    dom.on('keydown', self.input, function (e) {
+        if (e.keyCode === 13) {
+
+        }
+    });
+};
+```
+
