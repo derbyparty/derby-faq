@@ -1,12 +1,12 @@
 FAQ for Derby 0.6
 =================
 
-[Russian version(original)](https://github.com/derbyparty/derby-faq/tree/master/ru) &copy; Artur Zayats
+[English version](https://github.com/derbyparty/derby-faq/tree/master/en)
 
-[English version](https://github.com/derbyparty/derby-faq/tree/master/en) &copy; Osman Mazinov, Alexander Wenzowski
+[Русская версия](https://github.com/derbyparty/derby-faq/tree/master/ru)
 
 ## MIT License
-Copyright (c) 2014 by Artur Zayats
+Copyright (c) 2014 by Artur Zayats, Osman Mazinov, Alexander Wenzowski
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
