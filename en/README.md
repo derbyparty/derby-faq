@@ -28,9 +28,12 @@ If the answer is important and common enough, we'll add it to the FAQ.
 
 Work through the tutorials:
 
-1. [Running Derby 0.6, Example # 1 (Russian)](http://habrahabr.ru/post/221027/)
-2. [Running Derby 0.6, Example # 2 (Russian)](http://habrahabr.ru/post/221703/)
-3. [Running Derby 0.6, Example # 3 (Russian)](http://habrahabr.ru/post/222399/)
+1. [Running Derby 0.6, Example # 1](https://github.com/dmapper/derby-tutorials/blob/master/derby1.md)
+2. [Running Derby 0.6, Example # 2](https://github.com/dmapper/derby-tutorials/blob/master/derby2.md)
+3. [Running Derby 0.6, Example # 3](https://github.com/dmapper/derby-tutorials/blob/master/derby3.md)
+4. [Derby 0.6: Introduction to components](https://github.com/dmapper/derby-tutorials/blob/master/derby4.md)
+5. [Multiplayer game on Derby.js](https://github.com/dmapper/derby-tutorials/blob/master/derby5.md)
+
 
 Then study the official [derby-examples](https://github.com/codeparty/derby-examples).
 
