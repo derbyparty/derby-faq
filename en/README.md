@@ -247,8 +247,7 @@ Comp.prototype.init = function(){
 ---
 ## Model
 
-#### I don't need all collection's fields in a browser,
-how to get only particular fields (collection's projection)?
+#### I don't need all collection's fields in a browser, how to get only particular fields (collection's projection)?
 
 All projections should be declared in a server part of a derby application
 ```js
@@ -659,4 +658,191 @@ Demo.prototype.create = function (model, dom) {
     });
 };
 ```
+---
 
+## Modules
+
+#### How to add a jade template engine to a derby application?
+In order to include jade into a derby app use [derby-jade](https://github.com/cray0000/derby-jade) module.
+
+Installing the module:
+```bash
+npm install derby-jade
+```
+
+In a derby app the module should be included before calling app.loadViews():
+```js
+app.serverUse(module, 'derby-jade');
+```
+
+Make sure that you have derby version 0.6.0-alpha7 or newer
+
+---
+#### What module should I use for authorization in derby?
+
+Use newly created specially for derby 0.6. [derby-login](https://github.com/vmakhaev/derby-login) module.
+
+The module also supports registration/authorization via social networks since it utilizes [passportjs](passportjs.org).
+
+---
+#### How to include client scripts into a derby-app, e.g. jQuery?
+
+If the script is on cdn-server, you can include it with a script tag within an html template, for instance:
+
+```html
+<Body:>
+  <!-- ... -->
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+```
+
+Surely, you can put entire script there but a better solution would be to use a Browserify interface for the purpose. The method is also good because your script is included into a bundle, which is loaded to a page as a second query (after html itself with embedded styles was rendered) which gives a high render speed.
+
+Here is the recommended way:
+
+```js
+// On the server side in server.js file
+
+store.on('bundle', function(browserify){
+  // local path (from project's root) of the script file
+  browserify.add("../js/minified/jquery-1.11.0.min.js");
+});
+```
+
+We usually use bower when we want to include client scripts. In grunt file we have tasks that are set up for minification and concatenation of all vendor scripts into a single one. Result vendor.min.js is included via the method described above.
+
+---
+## Writing modules
+
+#### How to check whether derby code is running on the client or on the server?
+
+There's a module with utilities in derby that has required flag:
+
+```js
+var derby = require('derby');
+
+if (derby.util.isServer) {
+  // the code runs only on the server
+}
+
+if (!derby.util.isServer) {
+  // the code runs only on the client
+}
+```
+
+---
+#### How to require a module that will run only on the server of a derby application?
+
+Let me explain first the specificity of requiring modules we need only on the server side. The thing is that all modules of a derby application which are included through a classic CommonJS require statement are loaded into 'bundle' hence they'll be copied to client's browser. We don't want redundant data to be in client's browser especially if the module will work only on the server. That's why instead of regular require we use serverRequire from the derby utils set:
+
+```js
+var derby = require('derby');
+
+if (derby.util.isServer) {
+  // The package will not be loaded into client's browser
+  var myPackage = derby.util.serverRequire('mypackage');
+  // ...
+}
+```
+
+---
+#### How to check if an application is running in production (isProduction)?
+
+A flag derby.util.isProduction is available both on client and server. If we look at util source we'll see that the flag is set using a standard nodejs approach:
+
+```js
+  var isProduction = process.env.NODE_ENV === 'production';
+```
+
+You should set NODE_ENV environment variable if necessary.
+
+Example of usage (works both on the client and the server):
+
+```js
+  if (derby.util.isProduction) {
+    // ...
+  } else {
+    // ...
+  }
+```
+
+---
+## Client and server interaction
+
+#### Is it possible to catch client connection/disconnection on the server?
+
+Yes it is, on the server:
+```js
+
+// Works when new client has connected
+store.on('client', function(client){
+  console.log('Client connected: ', client.id);
+
+  // Close event fires when client has disconnected
+  // (losing connection / closing a page)
+  client.on('close', function(reason){
+    console.log('Client disconnected: ', client.id);
+  });
+});
+```
+
+It should be mentioned, that on the server each application has 'clients' field - hash consists of all clients that are connected in the moment. It means we can walk through each of them, e.g:
+
+```js
+console.log('Clients connected in the moment:');
+for (var id in app.clients) {
+  console.log('Client: ', app.clients[id].id);
+}
+```
+
+---
+#### What if I need to run a chunk of code on the server only, does derby have an rpc analog?
+
+Yes it does. On the client you do:
+
+```js
+// Sending data to the server, getting result as a response
+app.model.channel.send('myEvent', data, function(result) {
+  //
+  // Handle the response, if needed, callback is not required.
+  //
+});
+```
+
+On the server:
+```js
+// On each new client's connection
+//
+store.on('client', function(client) {
+
+  // Register handler for the event called myEvent
+  client.channel.on('myEvent', function(data, cb) {
+
+    //
+    // Logic is here, not available on the client
+    // Suppose, the logic's result is in result variable.
+    //
+
+    cb(result);
+  });
+});
+```
+---
+#### How to notify all clients from the server?
+
+There's a hash on the server with all connected clients info, so we can send a message to all of the clients as follows:
+
+
+```js
+for (var id in app.clients) {
+  app.clients[id].channel.send('myEvent', data);
+}
+```
+
+Handling of myEvent on the client would be:
+```js
+this.model.channel.on('myEvent', function(data) {  
+  // The event reaction
+});
+```
+
+Note, that when sending the message we can also pass a callback, which will contain a response from the client. On the client the response should be sent via `return` statement. 
