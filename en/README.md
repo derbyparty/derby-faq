@@ -128,7 +128,7 @@ app.get('/chat/:room', function chatRoom(page, model, params, next) {
       page.render();
     });
   });
-}
+});
 
 // Derby renders on both client and server, and does some sneaky little tricks
 // to make everything work properly. You must declare your model functions on

@@ -97,7 +97,7 @@ app.get('/chat/:room', function(page, model, params, next){
       page.render();
     });
   });
-}
+});
 
 // Реактивные функции необходимо регистрировать после того,
 // как модель создана
