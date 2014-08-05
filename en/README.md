@@ -239,9 +239,8 @@ Comp.prototype.init = function(){
 ```js
 // 'count' - component's private path, 'items' - global path
 Comp.prototype.init = function(){
-  var count = this.model.at('count');
-  // count.path() returns something like: $components._1.count
-  this.model.root.start(count.path(), 'items', function(items){
+  // istead of path we can use scope, and scope always takes data from the root
+  this.model.start('count', this.model.scope('items'), function(items){
     return Object.keys(items).length;
   });
 }
