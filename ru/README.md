@@ -220,9 +220,9 @@ Comp.prototype.init = function(){
 ```js
 // count - приватный путь компоненты, items - глобальный путь
 Comp.prototype.init = function(){
-  var count = this.model.at('count');
-  // count.path() возращает что-то типа: $components._1.count
-  this.model.root.start(count.path(), 'items', function(items){
+  
+  // вместо пути можно передавать scope, а scope берет items из корня - #root.items
+  this.model.start('count', this.model.scope('items'), function(items){
     return Object.keys(items).length;
   });
 }
