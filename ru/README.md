@@ -156,6 +156,48 @@ app.on('model', function(model){
 ```
 
 ---
+#### Можно ли в derby делать mapReduce запросы к базе mongodb
+
+Да, но предварительно эту возможность нужно включить на сервере:
+
+```js
+var liveDbMongo = require('livedb-mongo');
+var derby = require('derby');
+
+var store = derby.createStore({
+  db: liveDbMongo(process.env.MONGO_URL + '?auto_reconnect', {
+    safe: true,
+    allowJSQueries: true // Вот здесь
+  }),
+  redis: redisClient
+});
+```
+Далее:
+
+```js
+  // Требования к функциям map и reduce полностью согласуются
+  // с документацией mongo
+  var query = model.query('items', {
+    $mapReduce: true,
+    $map: function(){
+      emit this.player, this.score
+    },
+    $reduce: function(key, values){
+      values.reduce(function(a, b) {
+        return a + b;
+      });
+    },
+    $query: {
+      type: 'public'
+    }
+  })
+  
+  model.subscribe(query, function(){
+    query.refExtra('_page.scores');
+  });
+```
+
+---
 ## Компоненты
 
 #### Как в шаблонах компонент получить доступ к корневой области видимости модели?
