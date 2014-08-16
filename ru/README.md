@@ -353,6 +353,54 @@ Comp.prototype.init = function(){
   }
 
 ```
+---
+#### Есть ли возможность давая псевдонимы компонентам через as вынести их в единую глобальную область видимости?
+
+Да, это можно сделать вкладывая их в `page`
+
+Допустим у нас есть компонетны A, B и С
+
+```js
+  app.component('a', A);
+  app.component('b', B);
+  app.component('c', C);
+  
+  function A(){};
+  function B(){};
+  function C(){};
+
+```
+
+index.html
+```html
+<Body:>
+  <view name="a" as="page.a"/>
+  
+<a:>
+  <view name="b" as="page.b"/>
+  It's A
+
+<b:>
+  <view name="c" as="page.c"/>
+  It's B
+
+<c:>
+  It's C
+
+```
+
+Теперь в коде любой из компонет A, B или С доступны все эти 3 комопненты, несмотря на иерархию.
+```js
+  A.prototype.show = function(){
+    // ...
+  };
+  
+  C.prototype.onClick = function(){
+    this.page.A.show(); // Самое важное здесь
+  };
+  
+```
+Поятно, что если бы именование производилось не через 'page', то в компоненте A была бы доступна только компонента B, а в B - компонента С.
 
 ---
 ## Модель
