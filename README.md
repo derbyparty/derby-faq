@@ -1,3 +1,4 @@
+[![NPM](https://nodei.co/npm/derby-faq.png?compact=true)](https://nodei.co/npm/derby-faq/)
 FAQ for Derby 0.6
 =================
 
