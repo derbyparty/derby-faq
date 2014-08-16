@@ -196,6 +196,43 @@ var store = derby.createStore({
     query.refExtra('_page.scores');
   });
 ```
+---
+#### Можно ли в derby делать aggregate запросы к базе mongodb
+
+Да, но предварительно эту возможность нужно включить на сервере:
+
+```js
+var liveDbMongo = require('livedb-mongo');
+var derby = require('derby');
+
+var store = derby.createStore({
+  db: liveDbMongo(process.env.MONGO_URL + '?auto_reconnect', {
+    safe: true,
+    allowAggregateQueries: true // Вот здесь
+  }),
+  redis: redisClient
+});
+```
+Далее:
+
+```js
+  // Внутри aggregate запрос абсолютно соответствует документации
+  // к mongoDb
+  var query = model.query('items', {
+    $aggregate: [{
+      $group: {
+        _id: '$y', 
+        count: {$sum: 1}
+      }
+    }, {
+      $sort: {count: 1}
+    }]
+  })
+  
+  model.subscribe(query, function(){
+    query.refExtra('_page.results');
+  });
+```
 
 ---
 ## Компоненты
