@@ -134,6 +134,27 @@ app.on('model', function(model){
     query.refIds('_page.topicIds');
   });
 ```
+
+---
+#### Можно ли в derby делать distinct запросы к базе mongodb
+
+Да, пример:
+```js
+  // В коллекции items отбираем элементы с типом: public
+  // и получаем все уникальные имена
+  var query = model.query('items', {
+    $distinct: true,
+    $field: 'name',
+    $query: {
+      type: 'public'
+    }
+  })
+  
+  model.subscribe(query, function(){
+    query.refExtra('_page.uniqueNames');
+  });
+```
+
 ---
 ## Компоненты
 
