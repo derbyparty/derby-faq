@@ -1,4 +1,3 @@
-[![NPM](https://nodei.co/npm/derby-faq.png?compact=true)](https://nodei.co/npm/derby-faq/)
 FAQ for Derby 0.6
 =================
 
@@ -6,6 +5,7 @@ FAQ for Derby 0.6
 
 [Русская версия](https://github.com/derbyparty/derby-faq/tree/master/ru)
 
+[![NPM](https://nodei.co/npm/derby-faq.png?compact=true)](https://nodei.co/npm/derby-faq/)
 ## MIT License
 Copyright (c) 2014 by Artur Zayats, Osman Mazinov, Alexander Wenzowski
 
