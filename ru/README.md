@@ -329,6 +329,32 @@ Comp.prototype.init = function(){
 ```
 
 ---
+#### Как лучше всего подписываться на события модели в компонентах?
+
+Если делать `on` и `once` используя обычную модель, то необходимо будет отписывать при `destroy` компонента.
+```javascript
+  MyComponent.prototype.init = function(model){
+    var this.handler = model.root.on('change', 'chats.*', function(){
+    });
+  }
+  
+  MyComponent.prototype.destroy = function(){
+    this.model.removeListener(this.handler);
+  }
+
+```
+Если делать подписку через scoped-модель, компонента при уничтожении сама позаботиться о подписках:
+
+```javascript
+  MyComponent.prototype.init = function(model){
+    model.scope('chats').on('change', function(){
+    
+    });
+  }
+
+```
+
+---
 ## Модель
 
 #### Мне не нужны все поля коллекции в браузере, как получать только определенные поля (проекцию коллекции)?
