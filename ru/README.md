@@ -38,6 +38,12 @@ FAQ по Derby 0.6 (на русском)
 
 Используйте [generator-derby](https://github.com/derbyparty/generator-derby). Он поддерживает javascript/coffeescript, опционально jade, stylus, redis.
 
+#### Что делать, если я нашел баг?
+
+1. `rm -rf node_modules & npm cache clear & npm install`
+2. попробуйте в другом браузере
+3. отключите расширения браузера
+4. поищите в Issues, если ничего не нашли, то открывайте новое. В идеале приложите минимальный пример, повторяющий баг.
 ---
 ## Запросы
 
@@ -149,7 +155,7 @@ app.on('model', function(model){
       type: 'public'
     }
   })
-  
+
   model.subscribe(query, function(){
     query.refExtra('_page.uniqueNames');
   });
@@ -191,7 +197,7 @@ var store = derby.createStore({
       type: 'public'
     }
   })
-  
+
   model.subscribe(query, function(){
     query.refExtra('_page.scores');
   });
@@ -221,14 +227,14 @@ var store = derby.createStore({
   var query = model.query('items', {
     $aggregate: [{
       $group: {
-        _id: '$y', 
+        _id: '$y',
         count: {$sum: 1}
       }
     }, {
       $sort: {count: 1}
     }]
   })
-  
+
   model.subscribe(query, function(){
     query.refExtra('_page.results');
   });
@@ -320,7 +326,7 @@ Comp.prototype.init = function(){
 ```js
 // count - приватный путь компоненты, items - глобальный путь
 Comp.prototype.init = function(){
-  
+
   // вместо пути можно передавать scope, а scope берет items из корня - #root.items
   this.model.start('count', this.model.scope('items'), function(items){
     return Object.keys(items).length;
@@ -337,7 +343,7 @@ Comp.prototype.init = function(){
     var this.handler = model.root.on('change', 'chats.*', function(){
     });
   }
-  
+
   MyComponent.prototype.destroy = function(){
     this.model.removeListener(this.handler);
   }
@@ -348,7 +354,7 @@ Comp.prototype.init = function(){
 ```javascript
   MyComponent.prototype.init = function(model){
     model.scope('chats').on('change', function(){
-    
+
     });
   }
 
@@ -364,7 +370,7 @@ Comp.prototype.init = function(){
   app.component('a', A);
   app.component('b', B);
   app.component('c', C);
-  
+
   function A(){};
   function B(){};
   function C(){};
@@ -375,7 +381,7 @@ index.html
 ```html
 <Body:>
   <view name="a" as="page.a"/>
-  
+
 <a:>
   <view name="b" as="page.b"/>
   It's A
@@ -394,11 +400,11 @@ index.html
   A.prototype.show = function(){
     // ...
   };
-  
+
   C.prototype.onClick = function(){
     this.page.A.show(); // Самое важное здесь
   };
-  
+
 ```
 Поятно, что если бы именование производилось не через 'page', то в компоненте A была бы доступна только компонента B, а в B - компонента С.
 
@@ -440,20 +446,20 @@ model.subscribe('users' function(){
 ```js
   // Компонент чата подписывается на данные
   var model = this.model.context('chat');
-  
+
   // Переменная model - это обычная модель компоненты,
   // только находящаяся в контексте "chat"
-  
+
   var messagesQuery = model.query('messages', {
     // ..
   });
-  
+
   // Подписка делается в контексте
   model.subscribe('messagesQuery', function(){
     // ...
   });
 ```  
-  
+
 Теперь посмотрим как отписаться разом от всех подписок контекста chat и выгрузить все данные:
 
 ```js  
