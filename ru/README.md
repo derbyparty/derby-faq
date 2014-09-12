@@ -38,6 +38,7 @@ FAQ по Derby 0.6 (на русском)
 
 Используйте [generator-derby](https://github.com/derbyparty/generator-derby). Он поддерживает javascript/coffeescript, опционально jade, stylus, redis.
 
+---
 #### Что делать, если я нашел баг?
 
 1. `rm -rf node_modules & npm cache clear & npm install`
