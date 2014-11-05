@@ -515,6 +515,94 @@ starting from the 0.6.0-alpha6
 ```
 
 ---
+#### How to bind a view-function to the input/textarea/select/checkbox element? (How to write get: set: view-function)
+
+We want to write a function that transform RGB values and optional alpha channel into a hex-color (alpha channel makes hex-color closer to white). But we also want it to work the other way around in case we bind it to the input -- so that when we type the hex color it should decode it into RGB (with alpha channel equal to 1): 
+
+```html
+<input type='text' value='{{ hexify(menuColor.r, menuColor.g, menuColor.b, menuColor.alpha) }}'>
+```
+
+To define a get/set view-function you difine an object with `set` and `get` methods:
+
+```js
+app.proto.hexify = {
+  get: function(r, g, b, alpha){
+    var color = convertRgbToHex(r, g, b);
+    // Make color closer to white if 'alpha' is specified
+    color = lightenColor(hex, 1 - alpha);
+    return color;
+  },
+  // First argument in 'set' function is 'inputValue' -- each time you type something 
+  // into the input 'set' function is going to execute with 'value' being equal to 
+  // the new input value. 
+  // ATTENTION! WE DON'T COUNT 'inputValue' ARGUMENT WHEN WE RETURN STUFF OUT OF 'set'
+  set: function(inputValue, r, g, b, alpha){
+    var color = convertHexToRgb(inputValue);
+    // The 'set' function has to return an array -- all the arguments you want to set back
+    // into the paths that you have specified as arguments of view function.
+    // In this case it's 'menuColor.r', 'menuColor.g', 'menuColor.b', 'menuColor.alpha'.
+    // In the same order they are specified when you call the function, starting with
+    // the 0th argument (WARNING! The 0th argument as defined in 'get' function --
+    // we don't count the 'inputValue' argument of 'set' function).
+    return [color.r, color.g, color.b, 1];
+  }
+};
+```
+
+Now a couple of usecases you need to know about:
+
+1. If you only need to set first 3 arguments out of 4 you should just write those 3 in the array:
+
+    ```js
+    return [color.r, color.g, color.b];
+    ```
+
+2. If you only need the last value, you can pass an object instead of an array specifiyng the 
+    index of returning path that you want to set as a key. So to set `menuColor.alpha` back you
+    would do:
+
+    ```js
+    return {3: color.alpha};
+    ```
+
+    You can also use the object-way of return even when you want to set all the pathes:
+
+    ```js
+    return {0: color.r, 1: color.g, 2: color.b, 3: color.alpha};
+    ```
+
+    but array syntax is preferrable when you need to return value/values starting with 0th one
+    
+3. Even when you only want to set back a single path which is the 0th argument you still need to return it
+    wrapped into an array:
+
+    ```js
+    return [color.a];
+    ```
+
+4. (Considered BAD practice) If you want 'set' of view function to set some stuff which is not
+    related to what is going on in 'get' function, you can do by simply adding this additional path
+    when you call the view-function:
+    
+    ```html
+    <input type='number' value='{{ formatNumber(price, priceIsModified) }}'>
+    ```
+    
+    ```js
+    app.proto.formatNumber = {
+      get: function(number){
+        // limit to 2 decimals
+        return ~~((number || 0) * 100) / 100
+      },
+      set: function(number, modificationFlag){
+        number = parseFloat(number) || undefined;
+        return [number, true];
+      }
+    };
+    ```
+
+---
 
 ## Events
 
