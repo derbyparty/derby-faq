@@ -582,7 +582,7 @@ Now a couple of usecases you need to know about:
     ```
 
 4. (Considered BAD practice) If you want 'set' of view function to set some stuff which is not
-    related to what is going on in 'get' function, you can do by simply adding this additional path
+    related to what is going on in 'get' function, you can do it by simply adding this additional path
     when you call the view-function:
     
     ```html
