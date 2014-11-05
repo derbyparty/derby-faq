@@ -515,7 +515,7 @@ starting from the 0.6.0-alpha6
 ```
 
 ---
-#### How to bind a view-function to the input/textarea/select/checkbox element? (How to write get: set: view-function)
+#### How to bind a view-function to the input (any kind of html input) element? (How to write `get/set` view-function)
 
 We want to write a function that transform RGB values and optional alpha channel into a hex-color (alpha channel makes hex-color closer to white). But we also want it to work the other way around in case we bind it to the input -- so that when we type the hex color it should decode it into RGB (with alpha channel equal to 1): 
 
