@@ -829,7 +829,7 @@ var derby = require('derby');
 
 if (derby.util.isServer) {
   // The package will not be loaded into client's browser
-  var myPackage = derby.util.serverRequire('mypackage');
+  var myPackage = derby.util.serverRequire(module, 'mypackage');
   // ...
 }
 ```
