@@ -1006,7 +1006,7 @@ var derby = require('derby');
 
 if (derby.util.isServer) {
   // Пакет точно не попадет к клиентам в браузер
-  var myPackage = derby.util.serverRequire('mypackage');
+  var myPackage = derby.util.serverRequire(module, 'mypackage');
   // ...
 }
 ```
