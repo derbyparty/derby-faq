@@ -382,14 +382,14 @@ Comp.prototype.init = function(){
 index.html
 ```html
 <Body:>
-  <view name="a" as="page.a"/>
+  <view is="a" as="page.a"/>
 
 <a:>
-  <view name="b" as="page.b"/>
+  <view is="b" as="page.b"/>
   It's A
 
 <b:>
-  <view name="c" as="page.c"/>
+  <view is="c" as="page.c"/>
   It's B
 
 <c:>
@@ -852,7 +852,7 @@ index.html
   <!-- здесь будет header -->
 
   <!-- сюда будет генерится контент страниц -->
-  <view name="{{$render.ns}}"/>
+  <view is="{{$render.ns}}"/>
 
   <!-- здесь будет footer -->
 ```
@@ -905,7 +905,7 @@ app.get('/about', function(page){
 
 View:
 ```html
-<index: element='demo'>
+<index: tag='demo'>
     <input as='input' type='text' value="{{@value}}" />
 ```
 Code:
