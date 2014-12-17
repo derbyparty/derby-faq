@@ -646,8 +646,8 @@ app.proto.refresh = function(){
 <!-- соответствующего фильтра и имя -->
 
 <select>
-  {{each _page.filters as #filter}}
-      <option selected="{{_page.filterId === #filter.id}}" value="{{#filter.id}}">
+  {{each #root._page.filters as #filter}}
+      <option selected="{{#root._page.filterId === #filter.id}}">
         {{#filter.name}}
       </option>
   {{/}}
