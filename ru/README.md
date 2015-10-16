@@ -343,11 +343,9 @@ Comp.prototype.init = function(){
 ```javascript
   MyComponent.prototype.init = function(model){
     var this.handler = model.root.on('change', 'chats.*', function(){
+    this.on('destroy', function(){
+      this.model.removeListener(this.handler);
     });
-  }
-
-  MyComponent.prototype.destroy = function(){
-    this.model.removeListener(this.handler);
   }
 
 ```
