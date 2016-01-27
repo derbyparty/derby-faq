@@ -715,10 +715,10 @@ app.proto.hexify = {
     return color;
   },
   // Первый аргумент в 'set'-функции это 'inputValue' -- каждый раз, когда вы вводите
-  // что-либо в инпуте, 'set'-функция будет вызвана с этим новым значением, в качестве 
+  // что-либо в инпуте, 'set'-функция будет вызвана с этим новым значением, в качестве
   // первого параметра
   //
-  // ВНИМАНИЕ! 'inputValue' не учитывается при расчете номера параметра для возврата 
+  // ВНИМАНИЕ! 'inputValue' не учитывается при расчете номера параметра для возврата
   // результатов из 'set'-функции (об этом далее)
   set: function(inputValue, r, g, b, alpha){
     var color = convertHexToRgb(inputValue);
@@ -755,7 +755,7 @@ app.proto.hexify = {
     ```
 
     но использование массивов предпочтительней, когда индексы начинаются с 0 идут последовательно.
-    
+
 3. Даже когда у вас всего 1 аргумент в важей view-функции, для его установки, его необходимо оборачивать в массив:
 
     ```js
@@ -763,11 +763,11 @@ app.proto.hexify = {
     ```
 
 4. (Считается ПЛОХОЙ практикой) Если вы используете 'set'-функцию, для установки путей, не связанных с тем, что происходит в 'get'-функции. Это можно сделать просто передав дополнительный атрибут во view-функцию, напримет:
-    
+
     ```html
     <input type='number' value='{{ formatNumber(price, priceIsModified) }}'>
     ```
-    
+
     ```js
     app.proto.formatNumber = {
       get: function(number){
@@ -780,6 +780,27 @@ app.proto.hexify = {
       }
     };
     ```
+5. 'Set'-функция для  select'a запускается для каждого option'a со значением true (выбранный option) либо false (все остальные option'ы), поэтому надо игнорировать все те значения которые false:
+
+  ```html
+  <select>
+    <option selected="selectCity(myCity, 'Moscow')">Moscow</option>
+    <option selected="selectCity(myCity, 'Krasnodar')">Kransodar</option>
+    <option selected="selectCity(myCity, 'Penza')">Penza</option>
+  </select>
+  ```
+
+  ```js
+  app.proto.selectCity = {
+    get: function(myCity, testCity){
+      return myCity === testCity;
+    },
+    set: function(value, myCity, testCity){
+      if (!value) return;
+      return [testCity];
+    }
+  };
+  ```
 
 ---
 
