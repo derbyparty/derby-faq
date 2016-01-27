@@ -604,7 +604,7 @@ Now a couple of usecases you need to know about:
     };
     ```
 
-5. 'Set' of view function for select is triggered for each option with value true (selected option) or false (all other option's), so we should ignore all those values which false::
+5. 'Set' of view function for select is triggered for each option with value true (selected option) or false (all other option's), so we should ignore all those values which false:
 
   ```html
   <select>
