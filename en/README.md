@@ -497,10 +497,10 @@ No need in catching events, derby does it for you:
 
 Eventually _page.radioVal will contain either 'one', 'two' or 'three' depending on what user's selected.
 
-When binding to 
+When binding to
 ```html
 <input type="radio">
-```, derby expects to meet an equity check in a checked attribute (equities itself are required for initial value setting). It's assumed that the left parameter of the check would be a path that will update from the option's value attribute when selected. 
+```, derby expects to meet an equity check in a checked attribute (equities itself are required for initial value setting). It's assumed that the left parameter of the check would be a path that will update from the option's value attribute when selected.
 
 ---
 #### How to bind a reactive variable to the textarea element?
@@ -519,7 +519,7 @@ starting from the 0.6.0-alpha6
 ---
 #### How to bind a view-function to the input (any kind of html input) element? (How to write `get/set` view-function)
 
-Let's say we want to write a function that transforms RGB values and optional alpha channel into the hex-color (alpha channel makes hex-color closer to white). But we also want it to work the other way around in case we bind it to the input -- so that when we type the hex color it decodes it into RGB (with alpha channel equal to 1): 
+Let's say we want to write a function that transforms RGB values and optional alpha channel into the hex-color (alpha channel makes hex-color closer to white). But we also want it to work the other way around in case we bind it to the input -- so that when we type the hex color it decodes it into RGB (with alpha channel equal to 1):
 
 ```html
 <input type='text' value='{{ hexify(menuColor.r, menuColor.g, menuColor.b, menuColor.alpha) }}'>
@@ -535,9 +535,9 @@ app.proto.hexify = {
     color = lightenColor(hex, 1 - alpha);
     return color;
   },
-  // First argument in 'set' function is 'inputValue' -- each time you type something 
-  // into the input 'set' function is going to execute with 'value' being equal to 
-  // the new input value. 
+  // First argument in 'set' function is 'inputValue' -- each time you type something
+  // into the input 'set' function is going to execute with 'value' being equal to
+  // the new input value.
   // ATTENTION! WE DON'T COUNT 'inputValue' ARGUMENT WHEN WE RETURN STUFF OUT OF 'set'
   set: function(inputValue, r, g, b, alpha){
     var color = convertHexToRgb(inputValue);
@@ -560,7 +560,7 @@ Now a couple of usecases you need to know about:
     return [color.r, color.g, color.b];
     ```
 
-2. If you only need the last value, you can pass an object instead of an array specifiyng the 
+2. If you only need the last value, you can pass an object instead of an array specifiyng the
     index of returning path that you want to set as a key. So to set `menuColor.alpha` back you
     would do:
 
@@ -575,7 +575,7 @@ Now a couple of usecases you need to know about:
     ```
 
     but array syntax is preferrable when you need to return value/values starting with 0th one
-    
+
 3. Even when you only want to set back a single path which is the 0th argument you still need to return it
     wrapped into an array:
 
@@ -586,11 +586,11 @@ Now a couple of usecases you need to know about:
 4. (Considered BAD practice) If you want 'set' of view function to set some stuff which is not
     related to what is going on in 'get' function, you can do it by simply adding this additional path
     when you call the view-function:
-    
+
     ```html
     <input type='number' value='{{ formatNumber(price, priceIsModified) }}'>
     ```
-    
+
     ```js
     app.proto.formatNumber = {
       get: function(number){
@@ -603,6 +603,28 @@ Now a couple of usecases you need to know about:
       }
     };
     ```
+
+5. 'Set' of view function for select is triggered for each option with value true (selected option) or false (all other option's), so we should ignore all those values which false:
+
+  ```html
+  <select>
+    <option selected="selectCity(myCity, 'Moscow')">Moscow</option>
+    <option selected="selectCity(myCity, 'Krasnodar')">Kransodar</option>
+    <option selected="selectCity(myCity, 'Penza')">Penza</option>
+  </select>
+  ```
+
+  ```js
+  app.proto.selectCity = {
+    get: function(myCity, testCity){
+      return myCity === testCity;
+    },
+    set: function(value, myCity, testCity){
+      if (!value) return;
+      return [testCity];
+    }
+  };
+  ```
 
 ---
 
@@ -648,7 +670,7 @@ index.js
 // ...
 
 // Called only once in a browser after the first page rendering
-app.proto.create = function(model){ 
+app.proto.create = function(model){
   // Initializing jQuery AJAX
   $.ajaxSetup({
     dataType: 'json',
@@ -674,7 +696,7 @@ index.html
 
 <Body:>
   <!-- place for a header -->
-  
+
   <!-- pages content goes here -->
   <view name="{{$render.ns}}"/>
 
@@ -937,4 +959,4 @@ this.model.channel.on('myEvent', function(data) {
 });
 ```
 
-Note, that when sending the message we can also pass a callback, which will contain a response from the client. On the client the response should be sent via `return` statement. 
+Note, that when sending the message we can also pass a callback, which will contain a response from the client. On the client the response should be sent via `return` statement.
