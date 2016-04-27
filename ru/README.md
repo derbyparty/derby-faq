@@ -476,8 +476,8 @@ model.subscribe('users' function(){
 
 В серверной части derby-приложения в момент создания объекта store необходимо прописать только mongodb-данные:
 ```js
-  var store = derby.createStore({
-    db: liveDbMongo(mongoUrl + '?auto_reconnect', {safe: true})
+  var backend = derby.createBackend({
+    db: shareDbMonto(mongoUrl + '?auto_reconnect', {safe: true})
   });
 ```
 
@@ -988,7 +988,7 @@ app.serverUse(module, 'derby-jade');
 ```js
 // на серверной стороне derby? в файле server.js
 
-store.on('bundle', function(browserify){
+backend.on('bundle', function(browserify){
   // ваш локальный путь (от корня проекта) до файла скрипта
   browserify.add("../js/minified/jquery-1.11.0.min.js");
 });
@@ -1060,7 +1060,7 @@ if (derby.util.isServer) {
 Да можно, для этого на сервере:
 ```js
 // Срабатывает при каждом новом подключении клиентов
-store.on('client', function(client){
+backend.on('client', function(client){
   console.log('Подключился клиент:', client.id);
 
   // Событие close происходит при отключении клиента
@@ -1070,62 +1070,3 @@ store.on('client', function(client){
   });
 });
 ```
-
-Стоит так же иметь ввиду, что на сервере у каждого приложения есть поле clients - это хеш, содержащий всех подключенных на данный момент клиентов. То есть мы можем перебрать их, например вот-так:
-
-```js
-console.log('Сейчас к приложению подключены:');
-for (var id in app.clients) {
-  console.log('Клиент: ', app.clients[id].id);
-}
-```
-
----
-#### Мне нужно часть кода приложения выполнять строго на сервере, есть ли в derby аналог rpc?
-
-Да есть, на клиенте делаете:
-
-```js
-// Отсылаем на сервер data, получаем в ответ result
-app.model.channel.send('myEvent', data, function(result) {
-  //
-  // Обрабатываем ответ, если нужно - вообще колбек необязателен
-  //
-});
-```
-
-На сервере:
-```js
-// При каждом новом соединении клиента
-store.on('client', function(client) {
-
-  // Регистрируем обработчик для события myEvent
-  client.channel.on('myEvent', function(data, cb) {
-
-    //
-    // Здесь наша логика, которую не должны видеть в браузере
-    // допустим результат ее выполнения будет в result
-    //
-
-    cb(result);
-  });
-});
-```
-
----
-#### Как с сервера оповестить о чем-то клиентов?
-
-На серврере в каждом приложении есть хеш с подключенными клиентами, таким образом послать сообщение всем клиентам данного приложения можно вот-так:
-```js
-for (var id in app.clients) {
-  app.clients[id].channel.send('myEvent', data);
-}
-```
-
-На клиенте обработка события myEvent будет такой:
-```js
-this.model.channel.on('myEvent', function(data) {
-  // Реагируем на событие
-});
-```
-Стоит также иметь ввиду, что при отсылке сообщения можно дополнительно передать callback-функцию, в которую вернется ответ с клиента. На клиенте ответ возвращается через `return`.
