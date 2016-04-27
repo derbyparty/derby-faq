@@ -254,15 +254,14 @@ Comp.prototype.init = function(){
 All projections should be declared in a server part of a derby application
 ```js
 // Take into account ShareDB API changes
-var backend = store.backend || (store.shareClient && store.shareClient.backend);
-backend.addProjection("topic_headers", "topics", "json0", {
+backend.addProjection("topic_headers", "topics", {
   id: true,
   header: true,
   autor: true,
   createAt: true
 });
 
-backend.addProjection("users", "auth", "json0", {
+backend.addProjection("users", "auth", {
   id: true,
   username: true,
   email: true
