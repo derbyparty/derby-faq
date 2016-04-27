@@ -132,8 +132,7 @@ app.on('model', function(model){
 ---
   Но необходимо учитывать, что сама коллекция topics в данном случае будет копироваться в браузер, чтобы этого избежать используйте проекции. В серверной части derby, в server.js определите проекцию для коллекции topics:
 ```
-  var backend = store.backend || (store.shareClient && store.shareClient.backend);
-  backend.addProjection("topicIds", "topics", "json0", {id: true});
+    backend.addProjection("topicIds", "topics", {id: true});
 ```
   Далее с проекцией можно работать, как с обычной коллекцией.
 ```js
@@ -417,15 +416,14 @@ index.html
 В серверной части derby-приложения прописываются все проекции:
 ```js
 // Учитываем последние изменения в ShareDb API
-var backend = store.backend || (store.shareClient && store.shareClient.backend);
-backend.addProjection("topic_headers", "topics", "json0", {
+backend.addProjection("topic_headers", "topics", {
   id: true,
   header: true,
   autor: true,
   createAt: true
 });
 
-backend.addProjection("users", "auth", "json0", {
+backend.addProjection("users", "auth", {
   id: true,
   username: true,
   email: true
