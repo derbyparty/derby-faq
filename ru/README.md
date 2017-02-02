@@ -342,9 +342,9 @@ Comp.prototype.init = function(){
 Если делать `on` и `once` используя обычную модель, то необходимо будет отписывать при `destroy` компонента.
 ```javascript
   MyComponent.prototype.init = function(model){
-    var this.handler = model.root.on('change', 'chats.*', function(){
+    var this.handler = model.root.on('change', 'chats.*', function(){ ... });
     this.on('destroy', function(){
-      this.model.removeListener(this.handler);
+      this.model.removeListener('change', this.handler);
     });
   }
 
